@@ -3,16 +3,27 @@
 }
 
 <div class="container">
-    <form class="row row-cols-lg-auto g-3">
+    <div class="row mb-3">
         <div class="col">
-            <label class="visually-hidden" for="inline-form-name">Адрес</label>
-            <input type="text" class="form-control" id="inline-form-name" placeholder="Адрес">
+            <form id="geocodeForm" class="row">
+                <div class="col">
+                    <label class="visually-hidden" for="inline-form-address">Адрес</label>
+                    <input type="text" class="form-control" id="inline-form-address" name="address" placeholder="Адрес">
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Поставить точку</button>
+                </div>
+            </form>
         </div>
-        <div class="col">
-            <button type="submit" class="btn btn-primary">Submit Form</button>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-3">
+            <ul class="list-group" id="points">
+                <li class="list-group-item disabled">Метки на карте</li>
+            </ul>
         </div>
-    </form>
-</div>
-<div class="container">
-    <div id="map" style="width: 100%; height: 70vh;"></div>
+        <div class="col-9" id="map" style="width: 50vw; height: 600px"></div>
+    </div>
+    
 </div>

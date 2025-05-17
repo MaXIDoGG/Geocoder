@@ -1,16 +1,37 @@
-// Функция ymaps.ready() будет вызвана, когда
-// загрузятся все компоненты API, а также когда будет готово DOM-дерево.
+let myMap;
 ymaps.ready(init);
 function init(){
-		// Создание карты.
-		var myMap = new ymaps.Map("map", {
-		// Координаты центра карты.
-		// Порядок по умолчанию: «широта, долгота».
-		// Чтобы не определять координаты центра карты вручную,
-		// воспользуйтесь инструментом Определение координат.
-		center: [55.76, 37.64],
-	// Уровень масштабирования. Допустимые значения:
-	// от 0 (весь мир) до 19.
-zoom: 7
-		});
+    // Создание карты.
+    myMap = new ymaps.Map("map", {
+        // воспользуйтесь инструментом Определение координат.
+        center: [55.76, 37.64],
+        zoom: 7
+    });
+}
+
+const geocodeForm = document.getElementById('geocodeForm')
+let points = document.getElementById('points')
+geocodeForm.addEventListener('submit', handleFormSubmit)
+
+function handleFormSubmit(event) {
+    event.preventDefault()
+    const formData = new FormData(geocodeForm);
+    let address = formData.get('address');
+    let myGeocoder = ymaps.geocode(address);
+    myGeocoder.then(function (res) {
+        let nearest = res.geoObjects.get(0);
+        let name = nearest.properties.get('name');
+        
+
+        result = confirm(`Поставить точку "${name}" ?`);
+        if (result) {
+            nearest.properties.set('iconContent', name);
+            nearest.options.set('preset', 'islands#redStretchyIcon');
+            myMap.geoObjects.add(nearest);
+            var li = document.createElement("li");
+            li.classList.add("list-group-item")
+            li.appendChild(document.createTextNode(`${name} (${nearest.geometry.getCoordinates()})`));
+            points.appendChild(li);
+        }
+    });   
 }
