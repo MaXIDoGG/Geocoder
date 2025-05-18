@@ -28,9 +28,12 @@ function handleFormSubmit(event) {
             nearest.properties.set('iconContent', name);
             nearest.options.set('preset', 'islands#redStretchyIcon');
             myMap.geoObjects.add(nearest);
-            var li = document.createElement("li");
-            li.classList.add("list-group-item")
+            let li = document.createElement("li");
+            li.classList.add("list-group-item");
             li.appendChild(document.createTextNode(`${name} (${nearest.geometry.getCoordinates()})`));
+            let button = document.createElement("button");
+            button.classList.add("btn-close");
+            li.appendChild(button);
             points.appendChild(li);
         }
     });   
