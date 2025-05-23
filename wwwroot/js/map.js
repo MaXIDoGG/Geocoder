@@ -5,6 +5,7 @@ function init() {
         center: [55.76, 37.64],
         zoom: 7
     });
+    loadPoints();
 }
 
 const geocodeForm = document.getElementById('geocodeForm')
@@ -13,10 +14,52 @@ geocodeForm.addEventListener('submit', handleFormSubmit)
 
 const markers = [];
 
-function deletePoint(index) {
-    myMap.geoObjects.remove(markers[index]);
-    markers.splice(index, 1);
-    rebuildPointsList();
+async function deletePoint(id) {
+    try {
+        await fetch(`/api/MapPoints/${id}`, { method: 'DELETE' });
+
+        const index = markers.findIndex(m => m.id === id);
+        if (index === -1) return;
+
+        myMap.geoObjects.remove(markers[index].ymapPoint);
+
+        markers.splice(index, 1);
+
+        rebuildPointsList();
+    } catch (error) {
+        console.error('Error deleting point:', error);
+    }
+}
+
+async function loadPoints() {
+    try {
+        const response = await fetch('/api/MapPoints');
+        const points = await response.json();
+
+        markers.forEach(marker => {
+            myMap.geoObjects.remove(marker.ymapPoint);
+        });
+        markers.length = 0;
+
+        points.forEach(point => {
+            const ymapPoint = new ymaps.Placemark(
+                [point.latitude, point.longitude],
+                { name: point.name },
+                { preset: 'islands#blueDotIcon' }
+            );
+
+            markers.push({
+                id: point.id,
+                ymapPoint: ymapPoint
+            });
+
+            myMap.geoObjects.add(ymapPoint);
+        });
+
+        rebuildPointsList();
+    } catch (error) {
+        console.error('Error loading points:', error);
+    }
 }
 
 function rebuildPointsList() {
@@ -24,9 +67,9 @@ function rebuildPointsList() {
     pointsList.innerHTML = '';
     pointsList.appendChild(header);
 
-    markers.forEach((marker, index) => {
-        const name = marker.properties.get('name');
-        const coords = marker.geometry.getCoordinates();
+    markers.forEach(marker => {
+        const name = marker.ymapPoint.properties.get('name');
+        const coords = marker.ymapPoint.geometry.getCoordinates();
 
         const pointLi = document.createElement('li');
         pointLi.className = 'list-group-item d-flex justify-content-between align-items-center';
@@ -35,21 +78,47 @@ function rebuildPointsList() {
             ${name} (${coords})
             <button class="btn-close" aria-label="Удалить"></button>
         `;
-
-        pointLi.querySelector('.btn-close').addEventListener('click', () => deletePoint(index));
+        pointLi.querySelector('.btn-close').addEventListener('click', () => deletePoint(marker.id));
         pointsList.appendChild(pointLi);
     });
 }
 
-function addPoint(point) {
+async function addPoint(point) {
     const name = point.properties.get('name');
+    const coords = point.geometry.getCoordinates();
     point.properties.set('iconContent', name);
     const result = confirm(`Поставить точку "${name}"?`);
 
     if (result) {
-        myMap.geoObjects.add(point);
-        markers.push(point);
-        rebuildPointsList();
+        try {
+            const response = await fetch('/api/MapPoints', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name,
+                    latitude: coords[0],
+                    longitude: coords[1]
+                })
+            });
+
+            const savedPoint = await response.json();
+
+            const ymapPoint = new ymaps.Placemark(
+                coords,
+                { name: name },
+                { preset: 'islands#blueDotIcon' }
+            );
+
+            markers.push({
+                id: savedPoint.id,
+                ymapPoint: ymapPoint
+            });
+
+            myMap.geoObjects.add(ymapPoint);
+            rebuildPointsList();
+        } catch (error) {
+            console.error('Error adding point:', error);
+        }
     }
 }
 
