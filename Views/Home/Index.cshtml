@@ -23,7 +23,39 @@
                 <li class="list-group-item disabled"><b>Метки на карте</b></li>
             </ul>
         </div>
-        <div class="col-9" id="map" style="width: 50vw; height: 600px"></div>
+        <div class="col-9" id="map" style="width: 700px; height: 600px"></div>
     </div>
     
+</div>
+
+<!-- Модальное окно редактирования -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактирование точки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Название</label>
+                        <input type="text" class="form-control" id="editName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLatitude" class="form-label">Широта</label>
+                        <input type="number" step="any" class="form-control" id="editLatitude" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLongitude" class="form-label">Долгота</label>
+                        <input type="number" step="any" class="form-control" id="editLongitude" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveEditBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
 </div>
