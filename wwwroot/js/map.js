@@ -8,7 +8,7 @@ ymaps.ready(init);
 
 function init() {
     myMap = new ymaps.Map("map", {
-        center: [55.76, 37.64],
+        center: [55.030204, 82.92043],
         zoom: 7
     });
 
@@ -113,10 +113,8 @@ async function saveEditedPoint() {
     }
 
     try {
-        // Обновляем данные в БД
         const updated = await updatePointInDb(point.id, newName, newLat, newLon);
         if (updated) {
-            // Обновляем данные в маркере
             point.name = newName;
             point.marker.properties.set('name', newName);
             point.marker.properties.set('balloonContent', newName);
@@ -167,6 +165,7 @@ async function addPoint(ymapsPoint) {
 
     if (result) {
         const coords = ymapsPoint.geometry.getCoordinates();
+        await myMap.panTo(coords)
         const savedPoint = await addPointToDb(name, coords[0], coords[1]);
 
         if (savedPoint) {
