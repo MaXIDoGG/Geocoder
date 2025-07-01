@@ -1,4 +1,4 @@
-version: '3.8'
+﻿version: '3.8'
 
 services:
   geocoder:
@@ -9,12 +9,12 @@ services:
     ports:
       - "8080:8080"
       - "8081:8081"
+    environment:
+     - ASPNETCORE_URLS=http://+:8080
     depends_on:
       - db
     networks:
       - app-network
-    
-
   
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
