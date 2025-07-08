@@ -7,10 +7,9 @@ services:
       context: app
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "80:80"
     environment:
-     - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=http://+:80
     depends_on:
       - db
     networks:
